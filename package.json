@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "liftoff: a scroll-driven cinematic journey from a launchpad on Earth to the edge of the unknown.",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite --port 5230 --strictPort",

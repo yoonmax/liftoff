@@ -115,6 +115,8 @@ That's the only hardware measured. Expect much less on integrated or older GPUs,
 
 NASA's guidelines say its material, including texture maps, is generally not subject to US copyright. NASA does not endorse this project. The launch site sits on the real Florida coast, so the geography under the flight is accurate, but the vehicle, mission profile and every number on screen are fictional, and the interface says so.
 
+liftoff is released under the [MIT License](LICENSE). That covers this repository's code and the assets it generates. The NASA imagery and the fonts in the table above keep their own terms, and so do the dependencies, including [GSAP](https://gsap.com/), under its standard no-charge license.
+
 ## Local development
 
 Requires Node 22.12 or newer.

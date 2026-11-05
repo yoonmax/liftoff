@@ -1,0 +1,40 @@
+{
+  "name": "liftoff",
+  "private": true,
+  "version": "1.0.0",
+  "description": "liftoff: a scroll-driven cinematic journey from a launchpad on Earth to the edge of the unknown.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5230 --strictPort",
+    "build": "vite build",
+    "preview": "vite preview --port 5231 --strictPort",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "assets": "node scripts/bake-procedural.mjs && node scripts/prepare-textures.mjs",
+    "stills": "node scripts/capture-stills.mjs",
+    "measure": "node scripts/measure-performance.mjs"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@fontsource-variable/jost": "^5.3.0",
+    "@fontsource-variable/martian-mono": "^5.3.0",
+    "@gsap/react": "^2.1.2",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
+    "gsap": "^3.15.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "three": "^0.187.0",
+    "zustand": "^5.0.16"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@vitejs/plugin-react": "^6.2.1",
+    "jsdom": "^31.0.0",
+    "sharp": "^0.35.5",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
+  }
+}

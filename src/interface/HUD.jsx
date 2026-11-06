@@ -7,6 +7,7 @@ import { useUI } from './useUI.js';
 import { Wordmark } from './Wordmark.jsx';
 import { QualitySettings } from './QualitySettings.jsx';
 import { SoundToggle } from './SoundToggle.jsx';
+import { PlayInvitation, PlayToggle } from './PlayControl.jsx';
 import { goToChapter } from './navigation.js';
 
 export function ProgressIndicator() {
@@ -81,7 +82,7 @@ function ScrollHint() {
   }, []);
   return (
     <div className={`hint${show ? '' : ' is-off'}`} aria-hidden={!show}>
-      <span>scroll to begin the countdown</span>
+      <span>or scroll, at your own pace</span>
       <i aria-hidden="true" />
     </div>
   );
@@ -104,12 +105,14 @@ export function HUD() {
     <div className="hud">
       <a className="brand" href="#top" onClick={(e) => { e.preventDefault(); goToChapter('prelaunch'); }} aria-label="liftoff, back to the launchpad"><Wordmark /></a>
       <div className="tools">
+        <PlayToggle />
         <SoundToggle />
         <QualitySettings />
       </div>
       <ProgressIndicator />
       <ChapterIndicator />
       <ScrollHint />
+      <PlayInvitation />
     </div>
   );
 }

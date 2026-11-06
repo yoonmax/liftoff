@@ -28,6 +28,7 @@ Every frame above and below is a real capture from the running site.
 
 ## Interaction
 
+- **Play** the film hands-free: the button under the opening title, the one in the top corner, or the space bar. It takes about three and a half minutes. Scrolling takes over and pauses it; jumping to a chapter carries on playing from there.
 - **Scroll** is time. It works in both directions and at any speed.
 - **Chapter rail**, or the left and right arrow keys, to jump. Chapter links are real URLs (`/#orbit`) and browser back and forward follow them.
 - **Rocket hotspots**: hover or tab to a dot for an annotation; click to ease the lens towards it.
@@ -149,7 +150,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Browser tests run against the production build with a real GPU context: every stop reading identically on the way forward and back, a fast real scroll down and up restoring the titles, wheel scrolling both ways, every chapter rendering a non-blank frame, reload at a saved position, resize, deep links, back and forward, begin again, sound gating, hotspots, the crater inset, the gate, reduced motion, the WebGL fallback and phone layout. Set `BASE_URL` to run them against a deployed site.
+Browser tests run against the production build with a real GPU context: hands-free playback (steady progress, pausing, taking over by scrolling, chapter jumps, reaching the end and replaying), every stop reading identically on the way forward and back, a fast real scroll down and up restoring the titles, wheel scrolling both ways, every chapter rendering a non-blank frame, reload at a saved position, resize, deep links, back and forward, begin again, sound gating, hotspots, the crater inset, the gate, reduced motion, the WebGL fallback and phone layout. Set `BASE_URL` to run them against a deployed site.
 
 ## Deployment
 

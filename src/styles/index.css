@@ -41,7 +41,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .hud a, .hud button { pointer-events: auto; }
 .brand { position: absolute; left: var(--gutter); top: calc(var(--gutter) * 0.8); color: var(--ink); text-decoration: none; }
 .tools { position: absolute; right: var(--gutter); top: calc(var(--gutter) * 0.8); display: flex; gap: 22px; align-items: center; }
-.tool { font: 300 10px/1 var(--tech); color: var(--ink-2); display: inline-flex; align-items: center; gap: 7px; padding: 6px 0; transition: color 0.2s; }
+.tool { font: 300 10px/1 var(--tech); color: var(--ink-2); display: inline-flex; align-items: center; gap: 7px; padding: 6px 0; white-space: nowrap; transition: color 0.2s; }
 .tool b { font-weight: 400; color: var(--ink); }
 .tool:hover { color: var(--ink); }
 .meter { display: inline-flex; gap: 2px; align-items: flex-end; height: 9px; }
@@ -51,6 +51,15 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .meter.is-on i:nth-child(2) { height: 9px; animation-delay: -0.7s; }
 .meter.is-on i:nth-child(3) { height: 6px; }
 @keyframes meter { to { height: 3px; } }
+
+/* play: a larger target than the other tools, since it is the one people will reach for without looking */
+.tool--play { padding: 13px 9px; margin: -13px -9px; }
+.play-glyph { width: 8px; height: 8px; fill: currentColor; flex: none; }
+.play-invite { position: absolute; left: var(--gutter); bottom: max(calc(23vh - 60px), 92px); display: inline-flex; align-items: center; gap: 11px; padding: 12px 0 13px; font: 300 clamp(17px, 1.5vw, 22px)/1 var(--display); letter-spacing: 0.02em; color: var(--ink); text-shadow: 0 0 0.5em rgba(255, 236, 214, 0.3), 0 0 10px rgba(4, 6, 11, 0.6); transition: opacity 0.45s, visibility 0.45s; }
+.play-invite .play-glyph { width: 11px; height: 11px; filter: drop-shadow(0 0 5px rgba(255, 236, 214, 0.5)); }
+.play-invite::after { content: ''; position: absolute; left: 0; right: 0; bottom: 6px; height: 1px; background: var(--ink); transform-origin: left; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.play-invite:hover::after { transform: scaleX(0.34); }
+.play-invite.is-off { opacity: 0; visibility: hidden; pointer-events: none; }
 
 .quality { position: relative; }
 .quality__menu { position: absolute; right: 0; top: calc(100% + 8px); display: flex; flex-direction: column; min-width: 118px; padding: 6px 0; background: rgba(4, 6, 11, 0.86); backdrop-filter: blur(10px); border-top: 1px solid var(--hair); }
@@ -88,7 +97,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .dock__note { grid-column: 1 / -1; margin: 0; font: 300 9px/1 var(--tech); color: var(--ink-2); transition: opacity 0.6s; }
 .dock.is-under-way .dock__note { opacity: 0; }
 .dock__data { opacity: 0.78; }
-.hint { position: absolute; left: 50%; bottom: calc(var(--gutter) * 0.9); transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; font: 300 10px/1 var(--tech); color: var(--ink-2); transition: opacity 0.6s; }
+.hint { position: absolute; left: 50%; bottom: calc(var(--gutter) * 0.9); transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; font: 300 10px/1 var(--tech); color: var(--ink); text-shadow: 0 0 8px rgba(4, 6, 11, 0.95), 0 0 2px rgba(4, 6, 11, 0.8); transition: opacity 0.6s; }
 .hint.is-off { opacity: 0; }
 .hint i { display: block; width: 1px; height: 24px; background: linear-gradient(to bottom, var(--ink), transparent); transform-origin: top; animation: hint 2.1s cubic-bezier(0.6, 0, 0.2, 1) infinite; }
 @keyframes hint { 0% { transform: scaleY(0); } 55% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1) translateY(16px); opacity: 0; } }
@@ -154,6 +163,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .dock__data { gap: 14px; }
   .dock__data dd { min-width: 9ch; font-size: 10px; }
   .tools { gap: 12px; }
+  .play-invite { top: calc(11vh + 21vw + 12px); bottom: auto; }
   .quality b { display: inline; max-width: 74px; }
   .rail { height: 32vh; top: 44%; }
   .t-hero, .t-low, .t-moon, .t-mid, .t-orbit, .t-right, .t-gate { left: var(--gutter); right: var(--gutter); }
@@ -167,6 +177,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .spot__card { width: 170px; }
   .hint { display: none; }
 }
+/* Three controls have to fit beside the wordmark: the tier stays one tap away, in the menu. */
+@media (max-width: 480px) { .quality .tool b { display: none; } }
 @media (prefers-reduced-motion: reduce) {
   .hint i, .meter.is-on i { animation: none; }
   .dock__name { animation: none; }

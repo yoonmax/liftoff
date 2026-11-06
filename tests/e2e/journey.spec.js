@@ -270,3 +270,101 @@ test.describe('scrubbing backwards', () => {
     expect(titles.filter((t) => t.on && t.id !== 'hero')).toEqual([]);
   });
 });
+
+test.describe('playing it hands-free', () => {
+  const toggle = (page) => page.locator('.tool--play');
+  const near = (page, p, eps = 0.006) => page.waitForFunction(([v, e]) => Math.abs(window.__liftoff.timeline.progress() - v) < e, [p, eps], { timeout: 20_000 });
+
+  test('one press runs the film forward steadily, with no other input', async ({ page }) => {
+    const errors = watchConsole(page);
+    await openFilm(page);
+    await page.waitForTimeout(1200);
+    await page.locator('.play-invite').click();
+    await expect(toggle(page)).toHaveAccessibleName('pause the film');
+    await expect(page.locator('.play-invite')).toBeHidden();
+    await page.waitForTimeout(1500); // past the ease in and the scrub's catch-up
+    const samples = [];
+    for (let i = 0; i < 16; i++) { samples.push(await progress(page)); await page.waitForTimeout(250); }
+    samples.forEach((v, i) => { if (i) expect(v, `step ${i}`).toBeGreaterThan(samples[i - 1]); });
+    const rate = (samples.at(-1) - samples[0]) / (15 * 0.25);
+    expect(rate).toBeGreaterThan(1 / 210 * 0.7);
+    expect(rate).toBeLessThan(1 / 210 * 1.3);
+    expect(errors).toEqual([]);
+  });
+
+  test('pause holds the frame, and space toggles it from anywhere', async ({ page }) => {
+    await openFilm(page);
+    await page.waitForTimeout(1200);
+    await page.keyboard.press('Space');
+    await expect(toggle(page)).toHaveAccessibleName('pause the film');
+    await page.waitForTimeout(2200);
+    await page.keyboard.press('Space');
+    await expect(toggle(page)).toHaveAccessibleName('play the film');
+    await page.waitForTimeout(900); // the scrub's own smoothing finishes its last stretch
+    const a = await progress(page);
+    expect(a).toBeGreaterThan(0);
+    await page.waitForTimeout(800);
+    expect(await progress(page)).toBeCloseTo(a, 5);
+    await toggle(page).click();
+    await expect(toggle(page)).toHaveAccessibleName('pause the film');
+    await page.waitForTimeout(2000);
+    expect(await progress(page)).toBeGreaterThan(a);
+  });
+
+  test('scrolling by hand takes over and pauses it', async ({ page }) => {
+    await openFilm(page);
+    await page.waitForTimeout(1200);
+    await toggle(page).click();
+    await page.waitForTimeout(1500);
+    await page.mouse.move(640, 360);
+    await page.mouse.wheel(0, 1200);
+    await expect(toggle(page)).toHaveAccessibleName('play the film');
+    await settle(page);
+    const y = await page.evaluate(() => window.scrollY);
+    await page.waitForTimeout(700);
+    expect(await page.evaluate(() => window.scrollY)).toBe(y);
+  });
+
+  test('a chapter jump lands and the film keeps playing from there', async ({ page }) => {
+    await openFilm(page);
+    await page.waitForTimeout(1200);
+    await toggle(page).click();
+    await page.waitForTimeout(800);
+    await page.getByRole('button', { name: 'chapter 04, orbit' }).click();
+    await expect(page.locator('.dock__name')).toHaveText('orbit', { timeout: 12_000 });
+    await page.waitForFunction(() => !window.__liftoff.timeline.isActive() && window.__liftoff.timeline.progress() > 0.37, null, { timeout: 12_000 });
+    await page.waitForTimeout(3500);
+    await expect(toggle(page)).toHaveAccessibleName('pause the film');
+    const a = await progress(page);
+    await page.waitForTimeout(1500);
+    expect(await progress(page)).toBeGreaterThan(a);
+  });
+
+  test('it stops at the end, and play from there starts over', async ({ page }) => {
+    await openFilm(page);
+    await page.waitForSelector('[data-testid=ready]', { state: 'attached', timeout: 90_000 });
+    await scrollToFraction(page, 0.994);
+    await toggle(page).click();
+    await expect(toggle(page)).toHaveAccessibleName('play the film', { timeout: 8000 });
+    await near(page, 1, 0.0005);
+    await expect(page.getByRole('button', { name: 'begin again' })).toBeVisible();
+    await toggle(page).click();
+    await near(page, 0, 0.002);
+    await expect(toggle(page)).toHaveAccessibleName('pause the film', { timeout: 8000 });
+    await page.waitForTimeout(2200);
+    expect(await progress(page)).toBeGreaterThan(0);
+  });
+
+  test('reduced motion: play steps through the held frames', async ({ browser }) => {
+    const ctx = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 1280, height: 720 } });
+    const page = await ctx.newPage();
+    await openFilm(page);
+    await page.waitForTimeout(1000);
+    await expect(page.locator('.play-invite')).toHaveCount(0);
+    await page.evaluate(() => { window.scrollTo(0, (document.documentElement.scrollHeight - innerHeight) * 0.13); });
+    await expect(page.locator('.reduced')).toContainText('prelaunch');
+    await page.locator('.tool--play').click();
+    await expect(page.locator('.reduced')).toContainText('ignition', { timeout: 6000 });
+    await ctx.close();
+  });
+});
